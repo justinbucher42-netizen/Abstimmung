@@ -1,7 +1,17 @@
 import { createClient } from '@supabase/supabase-js'
 
-const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+// Nur Origin verwenden: entfernt versehentliche Pfade wie "/rest/v1" oder "/" am Ende sowie Leerzeichen.
+function normalizeUrl(raw: string | undefined): string | undefined {
+  if (!raw) return undefined
+  try {
+    return new URL(raw.trim()).origin
+  } catch {
+    return undefined
+  }
+}
+
+const url = normalizeUrl(import.meta.env.VITE_SUPABASE_URL as string | undefined)
+const key = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim()
 
 export const isConfigured = Boolean(url && key && url.startsWith('http'))
 
